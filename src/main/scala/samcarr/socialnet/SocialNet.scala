@@ -5,6 +5,7 @@ import java.util.Date
 object SocialNet {
   
   case class User(name: String)
+  
   case class Message(content: String, time: Date) {
     // Ignore date in equality.
     override def equals(other: Any) = true
