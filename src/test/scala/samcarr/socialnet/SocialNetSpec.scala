@@ -9,12 +9,9 @@ class SocialNetSpec extends UnitSpec {
   
   val emptyNet = SocialNet()
   
-  class TimeIgnoringMessage(message: String) extends Message(message, new Date()) {
-    override def equals(message: Any) = true
-  }
   // Utility methods to allow us to use strings as messages in our tests.
   def messages(messages: String*) = messages.toList map { stringToMessage(_) }
-  implicit def stringToMessage(message: String) = new TimeIgnoringMessage(message)
+  implicit def stringToMessage(message: String) = Message(message, new Date)
   
   "SocialNet" should "list zero messages for a user that has never posted" in {
     assert(emptyNet.read(Bob) === List())
