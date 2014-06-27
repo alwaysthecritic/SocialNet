@@ -13,13 +13,14 @@ object SocialNet {
   type UserFollows = Map[User, Set[User]]
   val EmptyFollows = Map[User, Set[User]]()
   
+  // Abstract the concept of current time, to enable predictable testing.
   class TimeSource {
     def currentTime() = new Date()
   }
   
   def apply(messages: UserMessages = EmptyUserMessages, follows: UserFollows = EmptyFollows)
            (implicit timeSource:TimeSource = new TimeSource()) =
-    new SocialNet(messages, follows)(timeSource)
+    new SocialNet(messages, follows)
 }
 
 import SocialNet._
