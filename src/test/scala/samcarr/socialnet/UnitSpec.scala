@@ -9,4 +9,5 @@ abstract class UnitSpec extends FlatSpec with Matchers with
   
   val Alice = User("Alice")
   val Bob = User("Bob")
+  val Carol = User("Carol")
 }

@@ -14,27 +14,27 @@ object SocialNet {
   val EmptyFollows = Map[User, Set[User]]()
   
   // Abstract the concept of current time, to enable predictable testing.
-  class TimeSource {
+  class Clock {
     def currentTime() = new Date()
   }
   
   def apply(messages: UserMessages = EmptyUserMessages, follows: UserFollows = EmptyFollows)
-           (implicit timeSource:TimeSource = new TimeSource()) =
+           (implicit clock:Clock = new Clock()) =
     new SocialNet(messages, follows)
 }
 
 import SocialNet._
 
 /**
- * Immutable social network - 'update' operations return a new instance.
+ * Immutable social network - update operations return a new instance.
  * Each user's messages should be ordered with newest messages first.
  */
-class SocialNet(messages: UserMessages, follows: UserFollows)(implicit timeSource:TimeSource) {
+class SocialNet(messages: UserMessages, follows: UserFollows)(implicit clock:Clock) {
   
   def read(user: User) = messages.getOrElse(user, List())
   
   def post(user: User, message: String) = {
-    val newMessage = Message(user, message, timeSource.currentTime())
+    val newMessage = Message(user, message, clock.currentTime())
     SocialNet(messages.updated(user, newMessage :: read(user)), follows)
   }
     
