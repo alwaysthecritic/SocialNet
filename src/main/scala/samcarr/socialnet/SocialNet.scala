@@ -1,11 +1,15 @@
 package samcarr.socialnet
 
 import java.util.Date
+import Duration.Ago
 
 object SocialNet {
   
   case class User(name: String)
-  case class Message(user: User, content: String, time: Date)
+  case class Message(user: User, content: String, time: Date) {
+    override def toString = s"${user.name} - $content ($ago)"
+    def ago = (new Date().getTime() - time.getTime()).ago
+  }
   
   type UserMessages = Map[User, List[Message]]
   val EmptyUserMessages = Map[User, List[Message]]()
