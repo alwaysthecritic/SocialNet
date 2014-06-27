@@ -13,8 +13,13 @@ object SocialNet {
   type UserFollows = Map[User, Set[User]]
   val EmptyFollows = Map[User, Set[User]]()
   
-  def apply(messages: UserMessages = EmptyUserMessages, follows: UserFollows = EmptyFollows) =
-    new SocialNet(messages, follows)
+  class TimeSource {
+    def currentTime() = new Date()
+  }
+  
+  def apply(messages: UserMessages = EmptyUserMessages, follows: UserFollows = EmptyFollows)
+           (implicit timeSource:TimeSource = new TimeSource()) =
+    new SocialNet(messages, follows)(timeSource)
 }
 
 import SocialNet._
@@ -23,12 +28,14 @@ import SocialNet._
  * Immutable social network - 'update' operations return a new instance.
  * Each user's messages should be ordered with newest messages first.
  */
-class SocialNet(messages: UserMessages, follows: UserFollows) {
+class SocialNet(messages: UserMessages, follows: UserFollows)(implicit timeSource:TimeSource) {
   
   def read(user: User) = messages.getOrElse(user, List())
   
-  def post(user: User, message: String) =
-    SocialNet(messages.updated(user, Message(user, message, new Date()) :: read(user)), follows)
+  def post(user: User, message: String) = {
+    val newMessage = Message(user, message, timeSource.currentTime())
+    SocialNet(messages.updated(user, newMessage :: read(user)), follows)
+  }
     
   def follow(user: User, userToFollow: User) =
     SocialNet(messages, follows.updated(user, followedBy(user) + userToFollow))
@@ -38,7 +45,7 @@ class SocialNet(messages: UserMessages, follows: UserFollows) {
   def wall(user: User) = {
     val users = followedBy(user) + user
     val allMessages = users.toList flatMap (read(_))
-    val sortedMessages = allMessages sortWith ((a, b) => a.time.before(b.time))
+    val sortedMessages = allMessages sortWith ((a, b) => a.time.after(b.time)) 
     sortedMessages
   }
 }

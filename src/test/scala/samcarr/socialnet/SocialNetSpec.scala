@@ -7,24 +7,39 @@ import scala.language.implicitConversions
 
 class SocialNetSpec extends UnitSpec {
   
-  val emptyNet = SocialNet()
+  class IncrementingTimeSource(var time: Long) extends TimeSource {
+    override def currentTime() = {
+      val current = new Date(time)
+      time += 1
+      current
+    }
+  }
+  
+  def timeZeroedNet() = {
+    implicit val fakeTimeSource = new IncrementingTimeSource(0L)
+    SocialNet()
+  }
   
   "SocialNet" should "list zero messages for a user that has never posted" in {
+    val emptyNet = timeZeroedNet()
     assert(emptyNet.read(Bob) === List())
   }
   
   it should "allow a user to post a message and read it back" in {
+    val emptyNet = timeZeroedNet()
     val net = emptyNet.post(Bob, "A message.")
     assertMessageListsEqual(net.read(Bob), Bob -> "A message.")
   }
   
   it should "list posted messages for a user, newest first" in {
+    val emptyNet = timeZeroedNet()
     val net = emptyNet.post(Bob, "Message 1")
                       .post(Bob, "Message 2")
     assertMessageListsEqual(net.read(Bob), Bob -> "Message 2", Bob ->"Message 1")
   }
   
   it should "list followed users' messages on a user's wall, interleaved in correct order" in {
+    val emptyNet = timeZeroedNet()
     val net = emptyNet.follow(Alice, Bob)
                       .post(Alice, "A1")
                       .post(Bob, "B1")
