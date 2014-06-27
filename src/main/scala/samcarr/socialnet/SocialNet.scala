@@ -5,8 +5,7 @@ import java.util.Date
 object SocialNet {
   
   case class User(name: String)
-  
-  case class Message(content: String, time: Date)
+  case class Message(user: User, content: String, time: Date)
   
   type UserMessages = Map[User, List[Message]]
   val EmptyUserMessages = Map[User, List[Message]]()
@@ -29,7 +28,7 @@ class SocialNet(messages: UserMessages, follows: UserFollows) {
   def read(user: User) = messages.getOrElse(user, List())
   
   def post(user: User, message: String) =
-    SocialNet(messages.updated(user, Message(message, new Date()) :: read(user)), follows)
+    SocialNet(messages.updated(user, Message(user, message, new Date()) :: read(user)), follows)
     
   def follow(user: User, userToFollow: User) =
     SocialNet(messages, follows.updated(user, followedBy(user) + userToFollow))
