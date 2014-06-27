@@ -6,10 +6,7 @@ object SocialNet {
   
   case class User(name: String)
   
-  case class Message(content: String, time: Date) {
-    // Ignore date in equality.
-    override def equals(other: Any) = true
-  }
+  case class Message(content: String, time: Date)
   
   type UserMessages = Map[User, List[Message]]
   val EmptyUserMessages = Map[User, List[Message]]()
