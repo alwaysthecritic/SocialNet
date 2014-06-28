@@ -12,13 +12,24 @@ import java.util.Date
  */
 class Cli(implicit clock:Clock = new Clock()) {
   
+  val Usage = """|Welcome to SocialNet.
+                 |Post a message:       <user> -> <message>
+                 |List user's messages: <user>
+                 |Follow another user:  <user> follows <other>
+                 |Show user's wall:     <user> wall""".stripMargin
+                   
   val Post    = """^(\S+) -> (.+)$""".r
   val Read    = """^(\S+)$""".r
   val Follows = """^(\S+) follows (\S+)$""".r
   val Wall    = """^(\S+) wall$""".r
   
+  def session(net:SocialNet): SocialNet = {
+    println(Usage)
+    readInput(net)
+  }
+  
   @tailrec
-  final def session(net: SocialNet): SocialNet = {
+  final def readInput(net: SocialNet): SocialNet = {
     implicit val currentNet = net
     val command = StdIn.readLine("social> ")
     
@@ -29,7 +40,7 @@ class Cli(implicit clock:Clock = new Clock()) {
       case Wall(name) => wall(User(name))
       case _ => println("Command not understood."); net
     }
-    session(updatedNet)
+    readInput(updatedNet)
   }
   
   def post(user: User, message: String)(implicit net: SocialNet) =
