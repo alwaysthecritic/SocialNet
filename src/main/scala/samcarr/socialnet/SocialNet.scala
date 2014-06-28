@@ -6,21 +6,13 @@ import Duration.Ago
 object SocialNet {
   
   case class User(name: String)
-  case class Message(user: User, content: String, time: Date) {
-    override def toString = s"${user.name} - $content ($ago)"
-    def ago = (new Date().getTime() - time.getTime()).ago
-  }
+  case class Message(user: User, content: String, time: Date)
   
   type UserMessages = Map[User, List[Message]]
   val EmptyUserMessages = Map[User, List[Message]]()
   
   type UserFollows = Map[User, Set[User]]
   val EmptyFollows = Map[User, Set[User]]()
-  
-  // Abstract the concept of current time, to enable predictable testing.
-  class Clock {
-    def currentTime() = new Date()
-  }
   
   def apply(messages: UserMessages = EmptyUserMessages, follows: UserFollows = EmptyFollows)
            (implicit clock:Clock = new Clock()) =
