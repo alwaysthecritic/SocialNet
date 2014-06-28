@@ -42,7 +42,8 @@ class SocialNetSpec extends UnitSpec {
   
   // Compare ignoring time.
   def assertMessageListsEqual(actual: List[Message], expected: Tuple2[User, String]*) = {
-    // Compare whole lists of pairs so we get helpful failure messages out.
+    // Compare whole lists of pairs so we get helpful failure messages out
+    // that highlight the error in the context of the whole list.
     val actualPairs = actual map { case Message(u, m, _) => (u, m) }
     assert(actualPairs == expected.toList)
   }
