@@ -29,7 +29,7 @@ class Cli(implicit clock:Clock = new Clock()) {
   }
   
   @tailrec
-  final def readInput(net: SocialNet): SocialNet = {
+  private final def readInput(net: SocialNet): SocialNet = {
     implicit val currentNet = net
     val command = StdIn.readLine("social> ")
     
@@ -43,29 +43,21 @@ class Cli(implicit clock:Clock = new Clock()) {
     readInput(updatedNet)
   }
   
-  def post(user: User, message: String)(implicit net: SocialNet) =
+  private def post(user: User, message: String)(implicit net: SocialNet) =
     net.post(user, message)
   
-  def read(user: User)(implicit net: SocialNet) = {
+  private def read(user: User)(implicit net: SocialNet) = {
     val messages = net.read(user)
-    println(formatMessages(messages))
+    println(MessageFormatter.formatMessages(messages))
     net
   }
   
-  def follow(user: User, userToFollow: User)(implicit net: SocialNet) = 
+  private def follow(user: User, userToFollow: User)(implicit net: SocialNet) = 
     net.follow(user, userToFollow)
     
-  def wall(user: User)(implicit net: SocialNet) = {
+  private def wall(user: User)(implicit net: SocialNet) = {
     val messages = net.wall(user)
-    println(formatMessages(messages))
+    println(MessageFormatter.formatMessages(messages))
     net
-  }
-  
-  def formatMessages(messages: List[Message]) =
-    messages map (formatMessage) mkString("\n")
-  
-  def formatMessage(message: Message) = {
-    val ago = (clock.currentTime().getTime() - message.time.getTime()).ago
-    s"${message.user.name} - ${message.content} ($ago)"
   }
 }
